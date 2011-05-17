@@ -8,6 +8,7 @@
 #include "wtl\atlmisc.h"
 #include "Pkt30viewDoc.h"
 #include "scrollView.h"
+#include "hexview.h"
 
 class CPkt30viewView : public CFrameWindowImpl<CPkt30viewView>
 {
@@ -28,6 +29,7 @@ public:
 	CPaneContainer m_rightPane;
 	CListViewCtrl m_lv;
 	CScrollView m_out;
+	CHexView m_hex;
 
 	BEGIN_MSG_MAP(CPkt30viewView)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -78,6 +80,9 @@ public:
 		m_leftPane.SetTitle(_T("Hex dump"));
 		m_leftPane.SetPaneContainerExtendedStyle(PANECNT_NOCLOSEBUTTON);
 		m_vSplit.SetSplitterPane(SPLIT_PANE_LEFT, m_leftPane);
+
+		m_hex.Create(m_leftPane, rcDefault, NULL,WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_leftPane.SetClient(m_hex);
 
 		m_rightPane.Create(m_vSplit);
 		m_rightPane.SetTitle(_T("Parsed packet"));
@@ -139,6 +144,7 @@ public:
 
 		if  ((nmlv->uChanged == LVIF_STATE)  && (nmlv->uOldState == 0) && (nmlv->uNewState == (LVIS_FOCUSED | LVIS_SELECTED)))
 		{
+			m_hex.SetData(m_doc->GetPacketData(nmlv->iItem), m_doc->GetPacketChunk(nmlv->iItem)->dataLength - 4);
 			m_out.Clear();
 			try
 			{

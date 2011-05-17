@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="filemap.h" />
+    <ClInclude Include="hexview.h" />
     <ClInclude Include="LuaVM.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Packet.h" />
