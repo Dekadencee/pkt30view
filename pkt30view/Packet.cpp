@@ -114,7 +114,7 @@ __int64 CPacket::ReadPackedGuid()
 	return result;
 }
 
-LPCTSTR CPacket::ReadString(int len)
+char* CPacket::ReadString(int len)
 {
 	int bufsize;
 	if (m_buf)
@@ -138,7 +138,7 @@ LPCTSTR CPacket::ReadString(int len)
 		m_ptr++;
 	} while ((c) && (i < bufsize) && (m_ptr < m_begin + m_len));
 	
-	return m_buf;
+	return str_convert(m_buf, CP_UTF8, 1251);
 }
 
 int CPacket::Decompress()
@@ -159,3 +159,31 @@ int CPacket::Decompress()
 	return 0;
 }
 
+char* CPacket::str_convert(const char *buf, UINT codepage_from, UINT codepage_to)
+{
+	wchar_t* pResw = 0;
+	char* pRes = 0;
+	int res_len = 0;
+	res_len = MultiByteToWideChar(codepage_from, 0, (LPCSTR)buf, -1, 0, 0);
+	if (!res_len)
+		return NULL;
+	pResw = new wchar_t[res_len];
+	if (!MultiByteToWideChar(codepage_from, 0, (LPCSTR)buf, -1, pResw, res_len))
+	{
+		delete[] pResw;
+		return NULL;
+	}
+	res_len = WideCharToMultiByte(codepage_to, 0, pResw, -1, 0, 0, 0, 0);
+	if (!res_len)
+		return 0;
+	pRes = new char[res_len];
+	if (!pRes)
+		return NULL;
+	if (!WideCharToMultiByte(codepage_to, 0, pResw, -1, pRes, res_len, 0, 0))
+	{
+		delete[] pRes;
+		return NULL;
+	}
+	delete[] pResw;
+	return pRes;
+}

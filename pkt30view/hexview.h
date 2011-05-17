@@ -63,8 +63,6 @@ class CHexView : public CScrollView
 			Insert(str);
 		}
 		Insert("+------+-------------------------------------------------+-----------------+");
-		//isprint()
-		//SetScrollPos(
 	}
 public:
 	void SetData(LPBYTE data, int len)

@@ -107,7 +107,9 @@ int CLuaVM::lua_readstring(lua_State* L)
 	int argc = lua_gettop(L);
 	if (argc == 0)
 	{
-		lua_pushstring(L, m_packet.ReadString());
+		char* s = m_packet.ReadString();
+		lua_pushstring(L, s);
+		delete[] s;
 		return 1;
 	}
 
@@ -115,7 +117,9 @@ int CLuaVM::lua_readstring(lua_State* L)
 	{
 		if (lua_isnumber(L, 1))
 		{
-			lua_pushstring(L, m_packet.ReadString(lua_tointeger(L, 1)));
+			char* s = m_packet.ReadString(lua_tointeger(L, 1));
+			lua_pushstring(L, s);
+			delete[] s;
 			return 1;
 		}
 		else
