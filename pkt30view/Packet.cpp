@@ -40,7 +40,7 @@ int CPacket::Read8()
 {
 	BYTE result = 0;
 
-	if ((m_len - (m_ptr - m_begin)) < sizeof(result))
+	if ((m_len - (m_ptr - m_begin)) > sizeof(result))
 	{
 		memcpy(&result, m_ptr, sizeof(result));
 		m_ptr += sizeof(result);
@@ -52,7 +52,7 @@ int CPacket::Read16()
 {
 	WORD result = 0;
 
-	if ((m_len - (m_ptr - m_begin)) < sizeof(result))
+	if ((m_len - (m_ptr - m_begin)) > sizeof(result))
 	{
 		memcpy(&result, m_ptr, sizeof(result));
 		m_ptr += sizeof(result);
@@ -64,7 +64,7 @@ int CPacket::Read32()
 {
 	DWORD result = 0;
 
-	if ((m_len - (m_ptr - m_begin)) < sizeof(result))
+	if ((m_len - (m_ptr - m_begin)) > sizeof(result))
 	{
 		memcpy(&result, m_ptr, sizeof(result));
 		m_ptr += sizeof(result);
@@ -76,7 +76,7 @@ float CPacket::ReadFloat()
 {
 	float result = 0;
 
-	if ((m_len - (m_ptr - m_begin)) < sizeof(result))
+	if ((m_len - (m_ptr - m_begin)) > sizeof(result))
 	{
 		memcpy(&result, m_ptr, sizeof(result));
 		m_ptr += sizeof(result);
@@ -88,7 +88,7 @@ __int64 CPacket::ReadGuid()
 {
 	__int64 result = 0;
 
-	if ((m_len - (m_ptr - m_begin)) < sizeof(result))
+	if ((m_len - (m_ptr - m_begin)) > sizeof(result))
 	{
 		memcpy(&result, m_ptr, sizeof(result));
 		m_ptr += sizeof(result);
@@ -138,7 +138,8 @@ char* CPacket::ReadString(int len)
 		m_ptr++;
 	} while ((c) && (i < bufsize) && (m_ptr < m_begin + m_len));
 	
-	return str_convert(m_buf, CP_UTF8, 1251);
+	char* r = str_convert(m_buf, CP_UTF8, CP_ACP);
+	return r;
 }
 
 int CPacket::Decompress()
