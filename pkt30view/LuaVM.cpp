@@ -25,14 +25,14 @@ void CLuaVM::InitModule(LPCTSTR filename)
 	static const luaL_Reg packet[] =
 	{
 		{"length", lua_length},
-//		{"read8", lua_read8},
-//		{"read16", lua_read16},
-//		{"read32", lua_read32},
+		{"read8", lua_read8},
+		{"read16", lua_read16},
+		{"read32", lua_read32},
 		{"readstring", lua_readstring},
-//		{"readguid", lua_readguid},
-//		{"readpackedguid", lua_readpackedguid},
-//		{"readfloat", lua_readfloat},
-//		{"decompress", lua_decompress},
+		{"readguid", lua_readguid},
+		{"readpackedguid", lua_readpackedguid},
+		{"readfloat", lua_readfloat},
+		{"decompress", lua_decompress},
 		{0, 0}
 	};	
 	luaL_register(m_LuaState, "packet", packet);
@@ -54,7 +54,52 @@ void CLuaVM::InitModule(LPCTSTR filename)
 
 int CLuaVM::lua_length(lua_State* L)
 {
-	return 0;
+	lua_pushnumber(L, m_packet.Length());
+	return 1;
+}
+
+int CLuaVM::lua_read8(lua_State* L)
+{
+	lua_pushnumber(L, m_packet.Read8());
+	return 1;
+}
+
+int CLuaVM::lua_read16(lua_State* L)
+{
+	lua_pushnumber(L, m_packet.Read16());
+	return 1;
+}
+
+int CLuaVM::lua_read32(lua_State* L)
+{
+	lua_pushnumber(L, m_packet.Read32());
+	return 1;
+}
+
+int CLuaVM::lua_readfloat(lua_State* L)
+{
+	lua_pushnumber(L, m_packet.ReadFloat());
+	return 1;
+}
+
+int CLuaVM::lua_readguid(lua_State* L)
+{
+	__int64 guid = m_packet.ReadGuid();
+	LPBYTE pg = (LPBYTE)&guid;
+	char str[100];
+	sprintf_s(str, "%02X%02X%02X%02X%02X%02X%02X%02X", pg[0], pg[1], pg[2], pg[3], pg[4], pg[5], pg[6], pg[7]);
+	lua_pushstring(L, str);
+	return 1;
+}
+
+int CLuaVM::lua_readpackedguid(lua_State* L)
+{
+	__int64 guid = m_packet.ReadPackedGuid();
+	LPBYTE pg = (LPBYTE)&guid;
+	char str[100];
+	sprintf_s(str, "%02X%02X%02X%02X%02X%02X%02X%02X", pg[0], pg[1], pg[2], pg[3], pg[4], pg[5], pg[6], pg[7]);
+	lua_pushstring(L, str);
+	return 1;
 }
 
 int CLuaVM::lua_readstring(lua_State* L)
@@ -73,6 +118,8 @@ int CLuaVM::lua_readstring(lua_State* L)
 			lua_pushstring(L, m_packet.ReadString(lua_tointeger(L, 1)));
 			return 1;
 		}
+		else
+			throw("readstring(arg): invalid arg type");
 	}
 
 	return 0;
@@ -92,6 +139,11 @@ int CLuaVM::lua_print(lua_State* L)
 	return 1;
 }
 
+int CLuaVM::lua_decompress(lua_State* L)
+{
+	lua_pushnumber(L, m_packet.Decompress());
+	return 1;
+}
 
 void CLuaVM::CallFunc(LPCTSTR psName, LPBYTE data, int len, void* out)
 {
