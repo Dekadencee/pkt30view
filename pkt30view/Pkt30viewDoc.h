@@ -30,6 +30,7 @@ private:
 	void LoadOpcodes(void);
 	void LoadParsers(void);
 public:
+	PKT_HEADER GetHeader();
 	void OnItemChange(int nItem);
 	int GetItemsCount(void);
 	LPPKT_CHUNK GetPacketChunk(int nIndex);

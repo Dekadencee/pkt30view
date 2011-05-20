@@ -1,7 +1,7 @@
 #pragma once
 #include "lua\lua.hpp"
 #include "packet.h"
-#include "scrollView.h"
+#include "OutView.h"
 
 class CLuaVM
 {
@@ -11,7 +11,7 @@ public:
 private:
 	lua_State* m_LuaState;
 	static CPacket m_packet;
-	static CScrollView* m_out;
+	static COutView* m_out;
 private:
 	static int lua_length(lua_State* L);
 	static int lua_read8(lua_State* L);
@@ -19,6 +19,7 @@ private:
 	static int lua_read32(lua_State* L);
 	static int lua_readfloat(lua_State* L);
 	static int lua_print(lua_State* L);
+	static int lua_println(lua_State* L);
 	static int lua_readstring(lua_State* L);
 	static int lua_readguid(lua_State* L);
 	static int lua_readpackedguid(lua_State* L);

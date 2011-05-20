@@ -86,11 +86,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,6 +118,7 @@
   <ItemGroup>
     <ClCompile Include="filemap.cpp" />
     <ClCompile Include="LuaVM.cpp" />
+    <ClCompile Include="OutView.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="pkt30view.cpp" />
     <ClCompile Include="Pkt30viewDoc.cpp" />
@@ -133,12 +134,12 @@
     <ClInclude Include="hexview.h" />
     <ClInclude Include="LuaVM.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="OutView.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="pkt30.h" />
     <ClInclude Include="Pkt30viewDoc.h" />
     <ClInclude Include="pkt30viewView.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="scrollView.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Zlib.h" />
   </ItemGroup>

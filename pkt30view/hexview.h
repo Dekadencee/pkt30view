@@ -1,7 +1,7 @@
 #pragma once
-#include "scrollView.h"
+#include "OutView.h"
 
-class CHexView : public CScrollView
+class CHexView : public COutView
 {
 	LPBYTE m_data;
 	int m_len;
@@ -36,12 +36,15 @@ class CHexView : public CScrollView
 	}
 	void DumpToHex()
 	{
+		int buffer_len = strlen("|      |  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F | 0123456789ABCDEF |  ");
 		Clear();
 		int nrows = m_len / 16;
 		int nrem = m_len % 16;
-		Insert("+------+-------------------------------------------------+-----------------+");
-		Insert("|offset|  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F | 0123456789ABCDEF|");
-		Insert("+------+-------------------------------------------------+-----------------+");
+		buffer_len *= (nrows + nrem + 3);
+		char* buffer = new char[buffer_len];
+		memset(buffer, 0, buffer_len);
+		strcat_s(buffer, buffer_len, "|      |  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F | 0123456789ABCDEF |\r\n");
+		strcat_s(buffer, buffer_len, "|------+-------------------------------------------------+----------------- |\r\n");
 		if (nrows)
 		{
 			for (int i = 0; i < nrows; i++)
@@ -49,8 +52,8 @@ class CHexView : public CScrollView
 				printhex(16);
 				printalpha(16);
 				char str[100];
-				sprintf_s(str, "|%06X|%s | %s|", i * 16, m_hex, m_alpha);
-				Insert(str);
+				sprintf_s(str, "| %04X |%s | %s |\r\n", i * 16, m_hex, m_alpha);
+				strcat_s(buffer, buffer_len, str);
 				m_data += 16;
 			}
 		}
@@ -59,10 +62,10 @@ class CHexView : public CScrollView
 			printhex(nrem);
 			printalpha(nrem);
 			char str[100];
-			sprintf_s(str, "|%06X|%s | %s|", nrows * 16, m_hex, m_alpha);
-			Insert(str);
+			sprintf_s(str, "|%06X|%s | %s |\r\n", nrows * 16, m_hex, m_alpha);
+			strcat_s(buffer, buffer_len, str);
 		}
-		Insert("+------+-------------------------------------------------+-----------------+");
+		SetWindowText(buffer);
 	}
 public:
 	void SetData(LPBYTE data, int len)

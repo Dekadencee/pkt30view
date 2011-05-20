@@ -40,6 +40,7 @@ void CLuaVM::InitModule(LPCTSTR filename)
 	static const luaL_Reg output[]=
 	{
 		{"print", lua_print},
+		{"println", lua_println},
 		{0, 0}
 	};	
 	luaL_register(m_LuaState, "output", output);
@@ -137,7 +138,21 @@ int CLuaVM::lua_print(lua_State* L)
 		if (lua_isstring(L, 1))
 		{
 			if (m_out)
-				m_out->Insert(lua_tostring(L, 1));
+				m_out->Print(lua_tostring(L, 1));
+		}
+	}
+	return 1;
+}
+
+int CLuaVM::lua_println(lua_State* L)
+{
+	int argc = lua_gettop(L);
+	if (argc)
+	{
+		if (lua_isstring(L, 1))
+		{
+			if (m_out)
+				m_out->PrintLn(lua_tostring(L, 1));
 		}
 	}
 	return 1;
@@ -152,7 +167,7 @@ int CLuaVM::lua_decompress(lua_State* L)
 void CLuaVM::CallFunc(LPCTSTR psName, LPBYTE data, int len, void* out)
 {
 	m_packet.Init(data, len);
-	m_out = static_cast<CScrollView*>(out);
+	m_out = static_cast<COutView*>(out);
 
 	lua_getglobal(m_LuaState, psName);
 	if (lua_pcall(m_LuaState, 0, 0, 0) != 0)
@@ -162,4 +177,4 @@ void CLuaVM::CallFunc(LPCTSTR psName, LPBYTE data, int len, void* out)
 }
 
 CPacket			CLuaVM::m_packet;
-CScrollView*	CLuaVM::m_out;
+COutView*	CLuaVM::m_out;

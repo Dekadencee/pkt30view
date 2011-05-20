@@ -5,10 +5,12 @@
 #pragma once
 
 #include "wtl\atlsplit.h"
+#define _WTL_NO_CSTRING
 #include "wtl\atlmisc.h"
 #include "Pkt30viewDoc.h"
-#include "scrollView.h"
+#include "OutView.h"
 #include "hexview.h"
+#include <time.h>
 
 class CPkt30viewView : public CFrameWindowImpl<CPkt30viewView>
 {
@@ -25,10 +27,9 @@ public:
 	CSplitterWindow m_vSplit;
 	CHorSplitterWindow m_hzSplit;
 
-	CPaneContainer m_leftPane;
-	CPaneContainer m_rightPane;
+	CPaneContainer m_topPane, m_leftPane, m_rightPane;
 	CListViewCtrl m_lv;
-	CScrollView m_out;
+	COutView m_out;
 	CHexView m_hex;
 
 	BEGIN_MSG_MAP(CPkt30viewView)
@@ -45,6 +46,54 @@ public:
 	void SetDoc(CPkt30viewDoc* doc)
 	{
 		m_doc = doc;
+	}
+	LPCTSTR FileInfoStr()
+	{
+		PKT_HEADER h = m_doc->GetHeader();
+		CString result;
+		result.Format("WoW build: %d, Language: '%c%c%c%c', Sniffer ID: %d", h.build, h.language[0], h.language[1], h.language[2], h.language[3], h.snifferID);
+		switch (h.snifferID)
+		{
+		case 0:
+			result += " (Wad)";
+			break;
+		case 1:
+			result += " (Nomad)";
+			break;
+		case 2:
+			result += " (WoWCore)";
+			break;
+		case 3:
+			result += " (Mangos 'TOM_RUS')";
+			break;
+		case 4:
+			result += " (User456)";
+			break;
+		case 5:
+			result += " (Delfin)";
+			break;
+		case 6:
+			result += " (Burlex)";
+			break;
+		case 7:
+			result += " (WCell)";
+			break;
+		case 8:
+			result += " (Kobold)";
+			break;
+		case 9:
+			result += " (abdula123)";
+			break;
+		case 10:
+			result += " (Konctantin/LordJZ)";
+			break;
+		case 11:
+			result += " (Joha)";
+			break;
+		default:
+			result += " (unknown)";
+		}
+		return result;
 	}
 
 	LRESULT OnCreate(UINT, WPARAM, LPARAM, BOOL&)
@@ -64,7 +113,12 @@ public:
 		m_vSplit.m_bFullDrag = false;
 		m_hzSplit.SetSplitterPane(SPLIT_PANE_BOTTOM, m_vSplit);
 
-		m_lv.Create(m_hzSplit, rcDefault, 0, WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SINGLESEL | LVS_OWNERDATA | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, IDC_LISTVIEW);
+		m_topPane.Create(m_hzSplit);
+		m_topPane.SetTitle(FileInfoStr());
+		m_topPane.SetPaneContainerExtendedStyle(PANECNT_NOCLOSEBUTTON);
+		m_hzSplit.SetSplitterPane(SPLIT_PANE_TOP, m_topPane);
+
+		m_lv.Create(m_topPane, rcDefault, 0, WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SINGLESEL | LVS_OWNERDATA | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, IDC_LISTVIEW);
 		m_lv.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES| LVS_EX_DOUBLEBUFFER);
 		m_lv.SetFont(m_font);
 		m_lv.GetHeader().SetFont(AtlGetDefaultGuiFont());
@@ -74,14 +128,15 @@ public:
 		m_lv.InsertColumn(3, _T("Direction"), LVCFMT_LEFT, 100);
 		m_lv.InsertColumn(4, _T("Opcode"), LVCFMT_LEFT, 400);
 		m_lv.InsertColumn(5, _T("Length"), LVCFMT_LEFT, 100);
-		m_hzSplit.SetSplitterPane(SPLIT_PANE_TOP, m_lv);
+		m_topPane.SetClient(m_lv);
 
 		m_leftPane.Create(m_vSplit);
 		m_leftPane.SetTitle(_T("Hex dump"));
 		m_leftPane.SetPaneContainerExtendedStyle(PANECNT_NOCLOSEBUTTON);
 		m_vSplit.SetSplitterPane(SPLIT_PANE_LEFT, m_leftPane);
 
-		m_hex.Create(m_leftPane, rcDefault, NULL,WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_hex.Create(m_leftPane, rcDefault, NULL, ES_AUTOHSCROLL | ES_LEFT | ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_hex.SetFont(m_font);
 		m_leftPane.SetClient(m_hex);
 
 		m_rightPane.Create(m_vSplit);
@@ -89,7 +144,8 @@ public:
 		m_rightPane.SetPaneContainerExtendedStyle(PANECNT_NOCLOSEBUTTON);
 		m_vSplit.SetSplitterPane(SPLIT_PANE_RIGHT, m_rightPane);
 
-		m_out.Create(m_rightPane, rcDefault, NULL,WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_out.Create(m_rightPane, rcDefault, NULL, ES_AUTOHSCROLL | ES_LEFT | ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_out.SetFont(m_font);
 		m_rightPane.SetClient(m_out);
 
 		if (m_doc)
@@ -99,7 +155,7 @@ public:
 	
 	LRESULT OnGetDispInfo(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 	{
-
+		time_t time;
 		char column[100];
 		memset(column, 0, 100);
 
@@ -114,7 +170,8 @@ public:
 				sprintf_s(column, "%d", pDispInfo->item.iItem + 1);
 				break;
 			case 1:
-				sprintf_s(column, "время");
+				time = chunk->unixTime;
+				strftime(column, 100, "%X", localtime(&time));
 				break;
 			case 2:
 				sprintf_s(column, "%d", chunk->tickCount - m_doc->GetStartTick());
@@ -144,6 +201,8 @@ public:
 
 		if  ((nmlv->uChanged == LVIF_STATE)  && (nmlv->uOldState == 0) && (nmlv->uNewState == (LVIS_FOCUSED | LVIS_SELECTED)))
 		{
+			m_hex.SetRedraw(FALSE);
+			m_out.SetRedraw(FALSE);
 			m_hex.SetData(m_doc->GetPacketData(nmlv->iItem), m_doc->GetPacketChunk(nmlv->iItem)->dataLength - 4);
 			m_out.Clear();
 			try
@@ -153,8 +212,10 @@ public:
 			}
 			catch (LPCTSTR e)
 			{
-				m_out.Insert(e);
+				m_out.PrintLn(e);
 			}
+			m_hex.SetRedraw(TRUE);
+			m_out.SetRedraw(TRUE);
 		}
 		return 0;
 	}

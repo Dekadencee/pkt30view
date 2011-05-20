@@ -13,6 +13,11 @@ CPkt30viewDoc::~CPkt30viewDoc(void)
 {
 }
 
+PKT_HEADER CPkt30viewDoc::GetHeader()
+{
+	return m_Header;
+}
+
 bool CPkt30viewDoc::OpenFile(LPCTSTR psName)
 {
 	if (!m_FileMap.Open(psName, false))

@@ -36,6 +36,9 @@
     <ClCompile Include="Zlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OutView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -68,13 +71,13 @@
     <ClInclude Include="Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scrollView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hexview.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OutView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
